@@ -8,32 +8,27 @@ items = []
 
 
 def get_item_by_name(name):
-    item = [item for item in items if item['name'] == name]
-    if item:
-        return item[0]
-    return None
+    return next(filter(lambda x: x['name'] == name, items), None)
 
 
 class Item(Resource):
     def get(self, name):
         item = get_item_by_name(name)
-        if item:
-            return item
-        return {'item': None}, 404
+        return {'item': item}, 200 if item else 404
 
     def post(self, name):
         item = get_item_by_name(name)
-        if not item:
-            data = request.get_json()
-            item = {'name': name, 'price': data['price']}
-            items.append(item)
-            return item, 201
-        return {'message': 'item {} already created'.format(name)}, 400
+        if item:
+            return {'message': 'item {} already created'.format(name)}, 400
+        data = request.get_json()
+        item = {'name': name, 'price': data['price']}
+        items.append(item)
+        return item, 201
 
 
 class Items(Resource):
     def get(self):
-        return items
+        return {'items': items}
 
 
 api.add_resource(Item, '/item/<string:name>')
