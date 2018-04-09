@@ -10,7 +10,7 @@ api = Api(app)
 
 items = []
 
-jwt = JWT(app, authenticate, identity)
+jwt = JWT(app, authenticate, identity)  # /auth
 
 
 def get_item_by_name(name):
