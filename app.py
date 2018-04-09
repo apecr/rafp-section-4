@@ -1,15 +1,16 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
-from flask_jwt import JWT
+from flask_jwt import JWT, jwt_required
 
 from security import authenticate, identity
 
 app = Flask(__name__)
+app.secret_key = 'jose'
 api = Api(app)
 
 items = []
 
-jwt = JWT(authenticate, identity)
+jwt = JWT(app, authenticate, identity)
 
 
 def get_item_by_name(name):
@@ -17,6 +18,7 @@ def get_item_by_name(name):
 
 
 class Item(Resource):
+    @jwt_required()
     def get(self, name):
         item = get_item_by_name(name)
         return {'item': item}, 200 if item else 404
