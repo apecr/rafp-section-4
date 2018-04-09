@@ -1,10 +1,15 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
+from flask_jwt import JWT
+
+from security import authenticate, identity
 
 app = Flask(__name__)
 api = Api(app)
 
 items = []
+
+jwt = JWT(authenticate, identity)
 
 
 def get_item_by_name(name):
