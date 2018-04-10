@@ -12,11 +12,7 @@ items = []
 
 jwt = JWT(app, authenticate, identity)  # /auth
 
-parser = reqparse.RequestParser()
-parser.add_argument('price',
-                    type=float,
-                    required=True,
-                    help='This filed cannot be left blank')
+
 
 
 def get_item_by_name(name):
@@ -24,6 +20,12 @@ def get_item_by_name(name):
 
 
 class Item(Resource):
+
+    parser = reqparse.RequestParser()
+    parser.add_argument('price',
+                        type=float,
+                        required=True,
+                        help='This filed cannot be left blank')
 
     @jwt_required()
     def get(self, name):
@@ -34,7 +36,7 @@ class Item(Resource):
         item = get_item_by_name(name)
         if item:
             return {'message': 'item {} already created'.format(name)}, 400
-        data = parser.parse_args()
+        data = Item.parser.parse_args()
         item = {'name': name, 'price': data['price']}
         items.append(item)
         return item, 201
@@ -45,7 +47,7 @@ class Item(Resource):
         return {'message': 'Item deleted'}
 
     def put(self, name):
-        data = parser.parse_args()
+        data = Item.parser.parse_args()
 
         item = next(filter(lambda x: x['name'] == name, items), None)
         if not item:
